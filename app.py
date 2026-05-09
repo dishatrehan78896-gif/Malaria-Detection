@@ -1,4 +1,3 @@
-# Suppress TensorFlow warnings
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -8,14 +7,12 @@ from PIL import Image
 import tensorflow as tf
 from datetime import datetime
 
-# Initialize Flask
 app = Flask(__name__)
 
 MODEL_PATH = "malaria_model.h5"
 
 print("\nLoading malaria_model.h5 ...")
 
-# Load Model
 try:
     model = tf.keras.models.load_model(MODEL_PATH)
     print("Model loaded successfully!")
@@ -24,13 +21,11 @@ try:
 except Exception as e:
     print("Error loading model:", e)
     model = None
-
-# Image Preprocessing
 def prepare_image(image_file):
     try:
         img = Image.open(image_file)
-        img = img.convert("RGB")          # Ensure 3 channels
-        img = img.resize((64, 64))       # SAME SIZE as training
+        img = img.convert("RGB")          
+        img = img.resize((64, 64))       
         img_array = np.array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
         return img_array
@@ -38,7 +33,6 @@ def prepare_image(image_file):
         print("Image processing error:", e)
         return None
 
-# Home Route with Upload Form
 @app.route('/', methods=['GET', 'POST'])
 def home():
     result_html = ""
@@ -68,7 +62,6 @@ def home():
                     <p>Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
                     """
 
-    # Simple HTML form template
     html = f"""
     <!DOCTYPE html>
     <html>
@@ -98,7 +91,6 @@ def home():
     """
     return render_template_string(html)
 
-# API Route (Optional, still works)
 @app.route('/predict', methods=['POST'])
 def predict_api():
     if model is None:
